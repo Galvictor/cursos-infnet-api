@@ -23,8 +23,8 @@ app.use(limiter);
 app.use(cors());
 app.use(express.json());
 
-app.use('/api', courseRoutes);
-app.use('/api', userRoutes); // Adicionando as rotas de usuários
+app.use('/', courseRoutes);
+app.use('/', userRoutes); // Adicionando as rotas de usuários
 
 app.get('/', (req, res) => {
     res.send('🚀 API da Plataforma de Cursos funcionando com Sequelize!');
