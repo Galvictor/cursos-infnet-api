@@ -1,15 +1,30 @@
+const {Op} = require('sequelize'); // Importando operadores para realizar buscas avançadas
 const Curso = require('./courses.model');
 
 class CourseService {
     /**
-     * Retorna a lista de todos os cursos disponíveis.
+     * Retorna a lista de cursos disponíveis, opcionalmente filtrados por nome ou descrição.
+     * @param {string} search Texto para filtrar os cursos.
      * @returns {Promise<Array>} Lista de cursos.
      */
-    async listarCursos() {
+    async listarCursos(search = '') {
         try {
-            const cursos = await Curso.findAll();
-            return cursos.map(curso => {
+            // Condição de filtro para busca
+            const searchCondition = search
+                ? {
+                    [Op.or]: [
+                        {nome: {[Op.like]: `%${search}%`}},
+                        {descricao: {[Op.like]: `%${search}%`}}
+                    ]
+                }
+                : {};
 
+            // Buscar cursos com o filtro (se houver)
+            const cursos = await Curso.findAll({
+                where: searchCondition
+            });
+
+            return cursos.map(curso => {
                 // Formatando a data de início do curso no formato dd/mm/aaaa
                 const dataFormatada = curso.data_inicio_curso
                     ? new Date(curso.data_inicio_curso).toLocaleDateString('pt-BR')
