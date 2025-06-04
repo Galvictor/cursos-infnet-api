@@ -6,6 +6,6 @@ const router = express.Router();
 router.post('/usuarios', cadastrarUsuario);
 
 // Rota para login de usuários
-router.post('/usuarios/login', loginUsuario);
+router.post('/login', loginUsuario);
 
 module.exports = router;
