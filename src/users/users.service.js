@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const Usuario = require('./users.model');
+const {generateToken} = require('../auth/jwt'); // Importa a função para gerar o token
 
 const criarUsuario = async (dadosUsuario) => {
     try {
@@ -21,10 +22,39 @@ const criarUsuario = async (dadosUsuario) => {
         // Retorno do usuário sem expor a senha
         const {senha, ...usuarioSemSenha} = novoUsuario.dataValues;
         return usuarioSemSenha;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+const autenticarUsuario = async (email, senha) => {
+    try {
+        // Busca o usuário pelo e-mail
+        const usuario = await Usuario.findOne({where: {email}});
+        if (!usuario) {
+            throw new Error('Usuário ou senha incorretos');
+        }
+
+        // Verifica se a senha está correta
+        const senhaValida = await bcrypt.compare(senha, usuario.senha);
+        if (!senhaValida) {
+            throw new Error('Usuário ou senha incorretos');
+        }
+
+        // Gera o token JWT
+        const token = generateToken({
+            id: usuario.id,
+            nome: usuario.nome,
+            email: usuario.email
+        });
+
+        // Retorna o token e alguns dados do usuário
+        const {senha: _, ...usuarioSemSenha} = usuario.dataValues;
+        return {usuario: usuarioSemSenha, token};
 
     } catch (error) {
         throw new Error(error.message);
     }
 };
 
-module.exports = {criarUsuario};
+module.exports = {criarUsuario, autenticarUsuario};
