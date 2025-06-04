@@ -4,7 +4,9 @@ const {rateLimit} = require('express-rate-limit');
 const cors = require('cors');
 
 const courseRoutes = require('./courses/courses.route');
-const userRoutes = require('./users/users.route'); // Adicionando as rotas de usuários
+const userRoutes = require('./users/users.route');
+const enrollmentRoutes = require('./enrollments/enrollments.route');
+
 
 // Configuração do rate limiter
 const limiter = rateLimit({
@@ -24,8 +26,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/', courseRoutes);
-app.use('/', userRoutes); // Adicionando as rotas de usuários
-
+app.use('/', userRoutes);
+app.use('/', enrollmentRoutes);
 app.get('/', (req, res) => {
     res.send('🚀 API da Plataforma de Cursos funcionando com Sequelize!');
 });
