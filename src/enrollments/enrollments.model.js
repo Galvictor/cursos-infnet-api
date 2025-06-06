@@ -12,7 +12,8 @@ const Inscricao = sequelize.define('inscricoes', {
         allowNull: false,
         references: {
             model: 'usuarios',
-            key: 'id'
+            key: 'id',
+            onDelete: 'CASCADE' // Aqui aplica o onDelete cascade
         }
     },
     id_curso: {
