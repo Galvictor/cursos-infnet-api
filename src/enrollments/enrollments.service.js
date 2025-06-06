@@ -9,17 +9,42 @@ const criarInscricao = async (idUsuario, idCurso) => {
             return {error: true, status: 404, message: "Curso não encontrado"};
         }
 
-        // Cria a inscrição
-        const novaInscricao = await Inscricao.create({id_usuario: idUsuario, id_curso: idCurso});
-        return {error: false, status: 200, inscricao: novaInscricao};
-    } catch (err) {
-        if (err.name === 'SequelizeUniqueConstraintError') {
+        // Verifica se o usuário já está inscrito neste curso (mesmo que cancelado)
+        const inscricaoExistente = await Inscricao.findOne({
+            where: {
+                id_usuario: idUsuario,
+                id_curso: idCurso
+            }
+        });
+
+        // Caso exista uma inscrição mas ela esteja cancelada, reativa-a
+        if (inscricaoExistente && inscricaoExistente.cancelado_em) {
+            inscricaoExistente.cancelado_em = null; // Remove o cancelamento
+            inscricaoExistente.inscrito_em = new Date(); // Atualiza a data de inscrição
+            await inscricaoExistente.save();
+            return {error: false, status: 200, inscricao: inscricaoExistente};
+        }
+
+        // Caso o usuário já esteja inscrito e a inscrição não esteja cancelada
+        if (inscricaoExistente) {
             return {error: true, status: 400, message: 'Usuário já inscrito neste curso'};
         }
-        // Retorna erro genérico
+
+        // Cria uma nova inscrição
+        const novaInscricao = await Inscricao.create({
+            id_usuario: idUsuario,
+            id_curso: idCurso,
+            inscrito_em: new Date()
+        });
+
+        return {error: false, status: 200, inscricao: novaInscricao};
+
+    } catch (err) {
+        console.error('Erro ao criar inscrição:', err);
         return {error: true, status: 400, message: 'Erro ao criar inscrição: ' + err.message};
     }
 };
+
 
 const cancelarInscricao = async (idUsuario, idCurso) => {
     try {
@@ -27,8 +52,7 @@ const cancelarInscricao = async (idUsuario, idCurso) => {
         const inscricao = await Inscricao.findOne({
             where: {
                 id_usuario: idUsuario,
-                id_curso: idCurso,
-                cancelado_em: null // Certifica-se de que a inscrição não foi cancelada antes
+                id_curso: idCurso
             }
         });
 
@@ -39,6 +63,7 @@ const cancelarInscricao = async (idUsuario, idCurso) => {
 
         // Atualiza o campo `cancelado_em` com a data atual
         inscricao.cancelado_em = new Date();
+        inscricao.inscrito_em = null;
         await inscricao.save();
 
         return {error: false, status: 200, message: "Inscrição cancelada com sucesso"};
