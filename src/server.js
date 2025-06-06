@@ -2,7 +2,7 @@ const app = require('./app');
 const dotenv = require('dotenv');
 dotenv.config();
 
-const sequelize = require('./config/db');
+const {sequelize} = require('./models'); // Importa o sequelize inicializado
 
 const PORT = process.env.PORT || 3000;
 
@@ -11,7 +11,9 @@ async function startServer() {
         await sequelize.authenticate();
         console.log('🟢 Banco de dados conectado com sucesso!');
 
-        // Por enquanto sem sync(), só conexão
+        // Sincroniza os modelos com o banco de dados (se necessário)
+        await sequelize.sync();
+
         app.listen(PORT, () => {
             console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
         });

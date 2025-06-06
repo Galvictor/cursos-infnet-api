@@ -1,6 +1,7 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/db');
 const Curso = require("../courses/courses.model");
+const Usuario = require("../users/users.model");
 
 const Inscricao = sequelize.define('inscricoes', {
     id: {
@@ -44,6 +45,11 @@ const Inscricao = sequelize.define('inscricoes', {
     ]
 });
 
-Inscricao.belongsTo(Curso, {foreignKey: 'id_curso', as: 'curso'});
+// Associações feitas após exportar a definição básica
+Inscricao.associate = () => {
+    Inscricao.belongsTo(Curso, { foreignKey: 'id_curso', as: 'curso' });
+    Inscricao.belongsTo(Usuario, { foreignKey: 'id_usuario', as: 'usuario' });
+};
+
 
 module.exports = Inscricao;

@@ -26,4 +26,10 @@ const Curso = sequelize.define('cursos', {
     tableName: 'cursos'
 });
 
+Curso.associate = () => {
+    const Inscricao = require('../enrollments/enrollments.model');
+    Curso.hasMany(Inscricao, {foreignKey: 'id_curso', as: 'inscricoes'});
+};
+
+
 module.exports = Curso;
