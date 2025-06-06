@@ -54,4 +54,30 @@ async function listarCursos(search = '') {
     }
 }
 
-module.exports = {listarCursos};
+/**
+ * Retorna todos os cursos em que o usuário está inscrito.
+ * @param {number} idUsuario ID do usuário.
+ * @returns {Promise<Array>} Lista de cursos.
+ */
+async function listarCursosDoUsuario(idUsuario) {
+    try {
+        // Busca todas as inscrições do usuário
+        const inscricoes = await Inscricao.findAll({
+            where: {id_usuario: idUsuario},
+            include: {
+                model: Curso, // Inclui os detalhes do curso
+                as: 'curso',// Alias definido na associação
+                attributes: ['id', 'nome', 'descricao', 'capa', 'data_inicio_curso']
+            }
+        });
+
+        // Extrai apenas os dados do curso de cada inscrição
+        return inscricoes.map(inscricao => inscricao.curso);
+    } catch (error) {
+        console.error('Erro ao listar cursos do usuário:', error);
+        throw new Error('Erro ao listar cursos do usuário');
+    }
+}
+
+
+module.exports = {listarCursos, listarCursosDoUsuario};

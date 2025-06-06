@@ -1,5 +1,6 @@
 const {DataTypes} = require('sequelize');
 const sequelize = require('../config/db');
+const Curso = require("../courses/courses.model");
 
 const Inscricao = sequelize.define('inscricoes', {
     id: {
@@ -42,5 +43,7 @@ const Inscricao = sequelize.define('inscricoes', {
         }
     ]
 });
+
+Inscricao.belongsTo(Curso, {foreignKey: 'id_curso', as: 'curso'});
 
 module.exports = Inscricao;
