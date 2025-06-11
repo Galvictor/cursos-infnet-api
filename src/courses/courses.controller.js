@@ -27,31 +27,16 @@ class CourseController {
      */
     async listarCursosDoUsuario(req, res) {
         try {
-            const authHeader = req.headers.authorization;
-
-            if (!authHeader || !authHeader.startsWith('Bearer ')) {
-                return res.status(403).json({mensagem: 'Usuário não está logado'});
-            }
-
-            const token = authHeader.split(' ')[1];
-            let usuario;
-
-            try {
-                // Verifica o token JWT
-                usuario = verifyToken(token);
-            } catch (err) {
-                return res.status(403).json({mensagem: 'Token inválido ou expirado'});
-            }
-
-            // Chama o serviço para listar os cursos do usuário
-            const cursos = await courseService.listarCursosDoUsuario(usuario.id);
-
+            // O `req.usuario` vem do middleware
+            const usuarioId = req.usuario.id;
+            const cursos = await courseService.listarCursosDoUsuario(usuarioId);
             return res.status(200).json(cursos);
         } catch (error) {
             console.error('Erro ao listar cursos do usuário:', error);
             return res.status(500).json({mensagem: 'Erro ao listar cursos do usuário'});
         }
     }
+
 }
 
 module.exports = new CourseController();
