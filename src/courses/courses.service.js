@@ -5,10 +5,11 @@ const {Op} = require('sequelize');
 /**
  * Retorna a lista de cursos disponíveis, opcionalmente filtrados por nome ou descrição.
  * Cada curso inclui uma contagem de inscrições.
+ * @param {number} idUsuario ID do usuário.
  * @param {string} search Texto para filtrar os cursos.
  * @returns {Promise<Array>} Lista de cursos.
  */
-async function listarCursos(search = '') {
+async function listarCursos(idUsuario, search = '') {
     try {
         // Condição de filtro para busca
         const searchCondition = search
@@ -33,6 +34,15 @@ async function listarCursos(search = '') {
                     where: {id_curso: curso.id},
                 });
 
+                // Verificar se o usuário está inscrito neste curso
+                const inscrito = await Inscricao.findOne({
+                    where: {
+                        id_curso: curso.id,
+                        id_usuario: idUsuario, // Verificação pelo ID do usuário
+                    },
+                });
+
+
                 const dataFormatada = curso.data_inicio_curso
                     ? new Date(curso.data_inicio_curso).toLocaleDateString('pt-BR')
                     : null;
@@ -44,7 +54,7 @@ async function listarCursos(search = '') {
                     capa: curso.capa,
                     inicio: dataFormatada,
                     inscricoes: countInscricoes,
-                    inscrito: false,
+                    inscrito: !!inscrito,
                 };
             })
         );

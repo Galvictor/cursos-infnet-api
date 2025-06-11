@@ -10,8 +10,10 @@ class CourseController {
      */
     async listarCursos(req, res) {
         try {
+            // O `req.usuario` vem do middleware
+            const usuarioId = req.usuario.id;
             const {search} = req.query; // Pegando o filtro da query string
-            const cursos = await courseService.listarCursos(search);
+            const cursos = await courseService.listarCursos(usuarioId,search);
             return res.status(200).json(cursos);
         } catch (error) {
             console.error("Erro ao listar cursos", error);

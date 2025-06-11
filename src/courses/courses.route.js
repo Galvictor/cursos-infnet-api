@@ -5,7 +5,7 @@ const {verificarAutenticacao} = require('../auth/middleware');
 const router = express.Router();
 
 // Rota para listar cursos
-router.get('/cursos', (req, res) => courseController.listarCursos(req, res));
+router.get('/cursos', verificarAutenticacao, (req, res) => courseController.listarCursos(req, res));
 // Rota para listar cursos em que o usuário está inscrito
 router.get('/cursos/me', verificarAutenticacao, (req, res) => courseController.listarCursosDoUsuario(req, res));
 
