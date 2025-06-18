@@ -8,5 +8,7 @@ const router = express.Router();
 router.get('/cursos', (req, res) => courseController.listarCursos(req, res));
 // Rota com userId específico
 router.get('/cursos/:userId', verificarAutenticacao, (req, res) => courseController.listarCursos(req, res));
+// Rota para listar cursos do usuário logado
+router.get('/meus-cursos', verificarAutenticacao, (req, res) => courseController.listarCursosDoUsuario(req, res));
 
 module.exports = router;
