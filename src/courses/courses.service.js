@@ -42,12 +42,6 @@ async function listarCursos(idUsuario, search = '') {
                     },
                 });
 
-                // Debug para verificar os valores
-                console.log('Dados da inscrição:', {
-                    inscrito_em: inscrito.inscrito_em,
-                    cancelado_em: inscrito.cancelado_em
-                });
-
 
                 const dataFormatada = curso.data_inicio_curso
                     ? new Date(curso.data_inicio_curso).toLocaleDateString('pt-BR')
@@ -60,8 +54,8 @@ async function listarCursos(idUsuario, search = '') {
                     capa: curso.capa,
                     inicio: dataFormatada,
                     inscricoes: countInscricoes,
-                    inscricao_cancelada: !!inscrito.cancelado_em,
-                    inscrito: !!inscrito.inscrito_em,
+                    inscricao_cancelada: inscrito ? !!inscrito.cancelado_em : false,
+                    inscrito: inscrito ? !!inscrito.inscrito_em : false
                 };
             })
         );
